@@ -1,4 +1,4 @@
-Package: flextable
+Package: flextable.custom
 Type: Package
 Title: Functions for Tabular Reporting
 Version: 0.5.10.004

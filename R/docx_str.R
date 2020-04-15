@@ -26,6 +26,7 @@ docx_str.flextable <- function(x, align = "center", split = FALSE, doc = NULL, .
 
   out <- paste0(out, "<w:tblPr><w:tblLayout w:type=\"fixed\"/>",
                 sprintf( "<w:jc w:val=\"%s\"/>", align ),
+                sprintf("<w:tblCellSpacing w:w=\"%s\" w:type=\"dxa\"/>", round(x$cell_spacing * 72 * 20, 0) ),
                 "</w:tblPr>" )
 
   out = paste0(out,  "<w:tblGrid>" )
