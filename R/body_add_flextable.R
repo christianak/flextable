@@ -23,6 +23,8 @@ body_add_flextable <- function( x, value, align = "center", pos = "after", split
 
   stopifnot(inherits(x, "rdocx"))
 
+  if (!exists(as.character(substitute(value)))){ return(x) }
+
   out <- docx_str(value, doc = x, align = align, split = split)
 
   body_add_xml(x = x, str = out, pos = pos)
