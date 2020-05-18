@@ -31,6 +31,7 @@ reference:
     contents:
     - starts_with("merge_")
     - starts_with("height")
+    - set_table_properties
     - width
     - hrule
     - autofit
@@ -119,14 +120,18 @@ navbar:
     href: articles/selectors.html
   - text: Layout
     href: articles/layout.html
-  - text: Format visual properties
+  - text: Visual properties
     href: articles/format.html
   - text: Format Content
     href: articles/display.html
-  - text: Render as image
-    href: articles/offcran/images.html
-  - text: Examples
-    href: articles/offcran/examples.html
+  - text: More
+    menu:
+    - text: As image
+      href: articles/offcran/images.html
+    - text: as flextable
+      href: articles/offcran/as_flextable.html
+    - text: Examples
+      href: articles/offcran/examples.html
   right:
   - text: Function reference
     href: reference/index.html

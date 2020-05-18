@@ -24,7 +24,7 @@ get_i_from_formula <- function( f, data ){
 get_j_from_formula <- function( f, data ){
   if( length(f) > 2 )
     stop("formula selection is not as expected ( ~ variables )", call. = FALSE)
-  j <- attr(terms(f), "term.labels")
+  j <- attr(terms(f, data = data), "term.labels")
   names_ <- names(data)
   if( any( invalid_names <- (!j %in% names_) ) ){
     invalid_names <- paste0("[", j[invalid_names], "]", collapse = ", ")
@@ -115,4 +115,15 @@ MIN <- function(z) as.double(min(z, na.rm = TRUE))
 MAX <- function(z) as.double(max(z, na.rm = TRUE))
 N <- function(z) length(z)
 NAS <- function(z) sum(is.na(z))
+
+
+#' @importFrom uuid UUIDgenerate
+as_bookmark <- function(id, str) {
+  new_id <- UUIDgenerate()
+  bm_start_str <- sprintf("<w:bookmarkStart w:id=\"%s\" w:name=\"%s\"/>", new_id, id)
+  bm_start_end <- sprintf("<w:bookmarkEnd w:id=\"%s\"/>", new_id)
+  paste0(bm_start_str, str, bm_start_end)
+}
+
+
 

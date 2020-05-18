@@ -253,13 +253,17 @@ dim.flextable <- function(x){
 #' each table columns and rows in inches.
 #' @param x flextable object
 #' @param part partname of the table (one of 'all', 'body', 'header' or 'footer')
+#' @section line breaks:
+#' Soft returns (a line break in a paragraph) are not supported. Function
+#' `dim_pretty` will return wrong results if `\n` are used (they will be
+#' considered as "").
 #' @examples
 #' ftab <- flextable(head(mtcars))
 #' dim_pretty(ftab)
 #' @family flextable dimensions
 dim_pretty <- function( x, part = "all" ){
 
-  part <- match.arg(part, c("all", "body", "header", "footer"), several.ok = FALSE )
+  part <- match.arg(part, c("all", "body", "header", "footer"), several.ok = TRUE )
   if( "all" %in% part ){
     part <- c("header", "body", "footer")
   }
@@ -286,13 +290,25 @@ dim_pretty <- function( x, part = "all" ){
 
 #' @export
 #' @title Adjusts cell widths and heights
-#' @description compute and apply optimized widths and heights.
+#' @description compute and apply optimized widths and heights
+#' (minimum estimated widths and heights for each table columns and rows
+#' in inches returned by function [dim_pretty()]).
+#'
 #' This function is to be used when the table widths and heights
 #' should automatically be adjusted to fit the size of the content.
+#'
+#' @note
+#' This function is not related to 'Microsoft Word' *Autofit* feature.
+#'
+#' @section line breaks:
+#' Soft returns (a line break in a paragraph) are not supported. Function
+#' `autofit` will return wrong results if `\n` are used (they will be
+#' considered as "").
 #'
 #' @param x flextable object
 #' @param add_w extra width to add in inches
 #' @param add_h extra height to add in inches
+#' @param part partname of the table (one of 'all', 'body', 'header' or 'footer')
 #' @examples
 #' ft_1 <- flextable(head(mtcars))
 #' ft_1
@@ -304,13 +320,18 @@ dim_pretty <- function( x, part = "all" ){
 #' \if{html}{\figure{fig_autofit_1.png}{options: width=90\%}}
 #'
 #' \if{html}{\figure{fig_autofit_2.png}{options: width=70\%}}
-autofit <- function(x, add_w = 0.1, add_h = 0.1 ){
+autofit <- function(x, add_w = 0.1, add_h = 0.1, part = c("body", "header")){
 
   stopifnot(inherits(x, "flextable") )
-  dimensions_ <- dim_pretty(x)
+
+  parts <- match.arg(part, c("all", "body", "header", "footer"), several.ok = TRUE )
+  if( "all" %in% parts ){
+    parts <- c("header", "body", "footer")
+  }
+
+  dimensions_ <- dim_pretty(x, part = parts)
   names(dimensions_$widths) <- x$col_keys
 
-  parts <- c("header", "body", "footer")
   nrows <- lapply(parts, function(j){
     nrow_part(x, j )
   } )
@@ -357,6 +378,43 @@ optimal_sizes <- function( x ){
 
   list(widths = apply(widths, 2, max, na.rm = TRUE),
        heights = apply(heights, 1, max, na.rm = TRUE) )
+}
+
+#' @importFrom officer table_layout table_width table_colwidths prop_table
+#' @export
+#' @title Global table properties
+#' @description Set table layout and table width. Default to fixed
+#' algorithm.
+#'
+#' If layout is fixed, column widths will be used to display the table;
+#' `width` is ignored.
+#'
+#' If layout is autofit, column widths will not be used;
+#' table width is used (as a percentage).
+#' @note
+#' PowerPoint output ignore autofit layout as this algorithm does not
+#' exist for this Microsoft format.
+#' @param x flextable object
+#' @param layout 'autofit' or 'fixed' algorithm. Default to 'autofit'.
+#' @param width value of the preferred width of the table in percent.
+#' @examples
+#' library(flextable)
+#' ft_1 <- qflextable(head(cars))
+#' ft_2 <- set_table_properties(ft_1, width = .5, layout = "autofit")
+#' ft_2
+#' @family flextable dimensions
+#' @section Illustrations:
+#'
+#' \if{html}{\figure{fig_set_table_properties_1.png}{options: width=15\%}}
+#'
+#' \if{html}{\figure{fig_set_table_properties_2.png}{options: width=75\%}}
+set_table_properties <- function(x, layout = "fixed", width = 1){
+
+  stopifnot(layout %in% c("fixed", "autofit"))
+  stopifnot(is.numeric(width), width <= 1)
+
+  x$properties <- list(layout = layout, width = width)
+  x
 }
 
 # utils ----
